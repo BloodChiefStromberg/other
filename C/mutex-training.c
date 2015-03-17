@@ -2,6 +2,9 @@
 #include <stdio.h>
 
 int thread_count = 0;
+const int MAX_THREADS = 3;
+const int COUNT_TO = 100;
+
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t thread_count_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -15,7 +18,7 @@ void *printLots(void *nothing)
 	printf(" (hello from thread %d!) ", mynumber);
 	int i;
 	pthread_mutex_lock(&mutex);
-	for (i = 0; i < 100; i++)
+	for (i = 0; i < COUNT_TO; i++)
 	{
 		printf("%d.%d ", mynumber, i);
 	}
@@ -26,9 +29,9 @@ void *printLots(void *nothing)
 
 int main()
 {
-	pthread_t threads[3];
+	pthread_t threads[MAX_THREADS];
 	int i;
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < MAX_THREADS; i++)
 	{
 		if (!pthread_create(&threads[i], NULL, printLots, NULL))
 			printf(" (Succesfully created pthread %d!) ", i);
@@ -36,9 +39,7 @@ int main()
 			printf(" (creating pthread %d failed) ", i);
 	}
 
-	//Bad form good sport! I should join all the threads I've created here
-	//but nah
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < MAX_THREADS; i++)
 		pthread_join(threads[i], 0);
 	
 	return 0;
